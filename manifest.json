@@ -1,0 +1,9 @@
+{
+	"id": "obsidian-word-count",
+	"name": "Word Count",
+	"version": "1.0.0",
+	"minAppVersion": "1.0.0",
+	"description": "Display word and character counts via modal popup and sidebar panel",
+	"author": "Dylan Chidambaram",
+	"isDesktopOnly": false
+}

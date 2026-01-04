@@ -1,0 +1,89 @@
+/* Word Count Modal */
+.word-count-modal {
+	padding: 1em;
+}
+
+.word-count-modal h2 {
+	margin-top: 0;
+	margin-bottom: 1em;
+}
+
+.word-count-modal h3 {
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
+	font-size: 1em;
+	color: var(--text-muted);
+}
+
+.word-count-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.word-count-table td {
+	padding: 0.4em 0;
+}
+
+.word-count-table .word-count-label {
+	color: var(--text-normal);
+}
+
+.word-count-table .word-count-value {
+	text-align: right;
+	font-weight: 600;
+	color: var(--text-accent);
+}
+
+/* Word Count Sidebar View */
+.word-count-view-container {
+	padding: 1em;
+}
+
+.word-count-header h4 {
+	margin: 0 0 1em 0;
+	font-size: 1.1em;
+}
+
+.word-count-content .word-count-section {
+	margin-bottom: 1.5em;
+}
+
+.word-count-content h5 {
+	margin: 0 0 0.5em 0;
+	font-size: 0.9em;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.word-count-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.word-count-item {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.3em 0;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.word-count-item:last-child {
+	border-bottom: none;
+}
+
+.word-count-item .word-count-label {
+	color: var(--text-normal);
+	font-size: 0.9em;
+}
+
+.word-count-item .word-count-value {
+	font-weight: 600;
+	color: var(--text-accent);
+}
+
+.word-count-empty {
+	color: var(--text-muted);
+	font-style: italic;
+}
