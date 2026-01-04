@@ -1,4 +1,5 @@
 import { Plugin, MarkdownView } from "obsidian";
+import { EditorView, ViewUpdate } from "@codemirror/view";
 import { WordCountModal } from "./WordCountModal";
 import { WordCountView, VIEW_TYPE_WORD_COUNT } from "./WordCountView";
 
@@ -49,10 +50,12 @@ export default class WordCountPlugin extends Plugin {
 			})
 		);
 
-		// Update sidebar on selection change via CodeMirror
-		this.registerEvent(
-			this.app.workspace.on("editor-menu", () => {
-				this.updateSidebarView();
+		// Update sidebar on selection change via CodeMirror extension
+		this.registerEditorExtension(
+			EditorView.updateListener.of((update: ViewUpdate) => {
+				if (update.selectionSet) {
+					this.updateSidebarView();
+				}
 			})
 		);
 	}
