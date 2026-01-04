@@ -1,0 +1,13 @@
+{
+  "showWords": true,
+  "showCharsWithSpaces": true,
+  "showCharsWithoutSpaces": true,
+  "showCharsWithoutPunctuation": true,
+  "showSidebarOnStartup": false,
+  "sidebarPosition": "right",
+  "showRibbonIcon": true,
+  "excludeMarkdown": false,
+  "excludeCodeBlocks": false,
+  "showSelectionStats": true,
+  "onlyShowSelectionWhenActive": false
+}

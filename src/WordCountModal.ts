@@ -1,14 +1,17 @@
 import { App, Modal } from "obsidian";
 import { TextStats, analyzeText } from "./utils";
+import { WordCountSettings } from "./settings";
 
 export class WordCountModal extends Modal {
 	private documentText: string;
 	private selectedText: string;
+	private settings: WordCountSettings;
 
-	constructor(app: App, documentText: string, selectedText: string) {
+	constructor(app: App, documentText: string, selectedText: string, settings: WordCountSettings) {
 		super(app);
 		this.documentText = documentText;
 		this.selectedText = selectedText;
+		this.settings = settings;
 	}
 
 	onOpen() {
@@ -17,12 +20,30 @@ export class WordCountModal extends Modal {
 
 		contentEl.createEl("h2", { text: "Word Count" });
 
-		const docStats = analyzeText(this.documentText);
+		const analysisOptions = {
+			excludeMarkdown: this.settings.excludeMarkdown,
+			excludeCodeBlocks: this.settings.excludeCodeBlocks,
+		};
+
+		const docStats = analyzeText(this.documentText, analysisOptions);
 		this.renderStatsSection(contentEl, "Document", docStats);
 
-		if (this.selectedText && this.selectedText.length > 0) {
-			const selStats = analyzeText(this.selectedText);
-			this.renderStatsSection(contentEl, "Selection", selStats);
+		// Handle selection display based on settings
+		if (this.settings.showSelectionStats) {
+			const hasSelection = this.selectedText && this.selectedText.length > 0;
+
+			if (hasSelection) {
+				const selStats = analyzeText(this.selectedText, analysisOptions);
+				this.renderStatsSection(contentEl, "Selection", selStats);
+			} else if (!this.settings.onlyShowSelectionWhenActive) {
+				// Show empty selection stats
+				this.renderStatsSection(contentEl, "Selection", {
+					words: 0,
+					charsWithSpaces: 0,
+					charsWithoutSpaces: 0,
+					charsWithoutPunctuation: 0,
+				});
+			}
 		}
 	}
 
@@ -32,10 +53,18 @@ export class WordCountModal extends Modal {
 
 		const table = section.createEl("table", { cls: "word-count-table" });
 
-		this.addRow(table, "Words", stats.words.toLocaleString());
-		this.addRow(table, "Characters (with spaces)", stats.charsWithSpaces.toLocaleString());
-		this.addRow(table, "Characters (without spaces)", stats.charsWithoutSpaces.toLocaleString());
-		this.addRow(table, "Characters (without punctuation)", stats.charsWithoutPunctuation.toLocaleString());
+		if (this.settings.showWords) {
+			this.addRow(table, "Words", stats.words.toLocaleString());
+		}
+		if (this.settings.showCharsWithSpaces) {
+			this.addRow(table, "Characters (with spaces)", stats.charsWithSpaces.toLocaleString());
+		}
+		if (this.settings.showCharsWithoutSpaces) {
+			this.addRow(table, "Characters (without spaces)", stats.charsWithoutSpaces.toLocaleString());
+		}
+		if (this.settings.showCharsWithoutPunctuation) {
+			this.addRow(table, "Characters (without punctuation)", stats.charsWithoutPunctuation.toLocaleString());
+		}
 	}
 
 	private addRow(table: HTMLTableElement, label: string, value: string) {

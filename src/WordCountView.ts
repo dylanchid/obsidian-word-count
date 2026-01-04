@@ -1,13 +1,16 @@
 import { ItemView, WorkspaceLeaf, MarkdownView } from "obsidian";
 import { TextStats, analyzeText } from "./utils";
+import type WordCountPlugin from "./main";
 
 export const VIEW_TYPE_WORD_COUNT = "word-count-view";
 
 export class WordCountView extends ItemView {
 	private contentContainer: HTMLElement | null = null;
+	private plugin: WordCountPlugin;
 
-	constructor(leaf: WorkspaceLeaf) {
+	constructor(leaf: WorkspaceLeaf, plugin: WordCountPlugin) {
 		super(leaf);
+		this.plugin = plugin;
 	}
 
 	getViewType(): string {
@@ -56,27 +59,55 @@ export class WordCountView extends ItemView {
 		const documentText = editor.getValue();
 		const selectedText = editor.getSelection();
 
-		const docStats = analyzeText(documentText);
+		const { settings } = this.plugin;
+		const analysisOptions = {
+			excludeMarkdown: settings.excludeMarkdown,
+			excludeCodeBlocks: settings.excludeCodeBlocks,
+		};
+
+		const docStats = analyzeText(documentText, analysisOptions);
 		this.renderStatsSection("Document", docStats);
 
-		if (selectedText && selectedText.length > 0) {
-			const selStats = analyzeText(selectedText);
-			this.renderStatsSection("Selection", selStats);
+		// Handle selection display based on settings
+		if (settings.showSelectionStats) {
+			const hasSelection = selectedText && selectedText.length > 0;
+
+			if (hasSelection) {
+				const selStats = analyzeText(selectedText, analysisOptions);
+				this.renderStatsSection("Selection", selStats);
+			} else if (!settings.onlyShowSelectionWhenActive) {
+				// Show empty selection stats
+				this.renderStatsSection("Selection", {
+					words: 0,
+					charsWithSpaces: 0,
+					charsWithoutSpaces: 0,
+					charsWithoutPunctuation: 0,
+				});
+			}
 		}
 	}
 
 	private renderStatsSection(title: string, stats: TextStats) {
 		if (!this.contentContainer) return;
 
+		const { settings } = this.plugin;
 		const section = this.contentContainer.createDiv({ cls: "word-count-section" });
 		section.createEl("h5", { text: title });
 
 		const list = section.createEl("ul", { cls: "word-count-list" });
 
-		this.addListItem(list, "Words", stats.words);
-		this.addListItem(list, "Chars (with spaces)", stats.charsWithSpaces);
-		this.addListItem(list, "Chars (no spaces)", stats.charsWithoutSpaces);
-		this.addListItem(list, "Chars (no punctuation)", stats.charsWithoutPunctuation);
+		if (settings.showWords) {
+			this.addListItem(list, "Words", stats.words);
+		}
+		if (settings.showCharsWithSpaces) {
+			this.addListItem(list, "Chars (with spaces)", stats.charsWithSpaces);
+		}
+		if (settings.showCharsWithoutSpaces) {
+			this.addListItem(list, "Chars (no spaces)", stats.charsWithoutSpaces);
+		}
+		if (settings.showCharsWithoutPunctuation) {
+			this.addListItem(list, "Chars (no punctuation)", stats.charsWithoutPunctuation);
+		}
 	}
 
 	private addListItem(list: HTMLUListElement, label: string, value: number) {

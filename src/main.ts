@@ -2,14 +2,21 @@ import { Plugin, MarkdownView } from "obsidian";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { WordCountModal } from "./WordCountModal";
 import { WordCountView, VIEW_TYPE_WORD_COUNT } from "./WordCountView";
+import { WordCountSettings, DEFAULT_SETTINGS, WordCountSettingTab } from "./settings";
 
 export default class WordCountPlugin extends Plugin {
 	private wordCountView: WordCountView | null = null;
+	private ribbonIconEl: HTMLElement | null = null;
+	settings: WordCountSettings = DEFAULT_SETTINGS;
 
 	async onload() {
+		await this.loadSettings();
+
+		// Register settings tab
+		this.addSettingTab(new WordCountSettingTab(this.app, this));
 		// Register the sidebar view
 		this.registerView(VIEW_TYPE_WORD_COUNT, (leaf) => {
-			this.wordCountView = new WordCountView(leaf);
+			this.wordCountView = new WordCountView(leaf, this);
 			return this.wordCountView;
 		});
 
@@ -31,10 +38,12 @@ export default class WordCountPlugin extends Plugin {
 			},
 		});
 
-		// Add ribbon icon to toggle sidebar
-		this.addRibbonIcon("file-text", "Word Count", () => {
-			this.toggleSidebar();
-		});
+		// Add ribbon icon to toggle sidebar (if enabled)
+		if (this.settings.showRibbonIcon) {
+			this.ribbonIconEl = this.addRibbonIcon("file-text", "Word Count", () => {
+				this.toggleSidebar();
+			});
+		}
 
 		// Update sidebar on editor changes
 		this.registerEvent(
@@ -58,6 +67,22 @@ export default class WordCountPlugin extends Plugin {
 				}
 			})
 		);
+
+		// Open sidebar on startup if enabled
+		if (this.settings.showSidebarOnStartup) {
+			this.app.workspace.onLayoutReady(() => {
+				this.openSidebar();
+			});
+		}
+	}
+
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
+		this.updateSidebarView();
 	}
 
 	onunload() {
@@ -75,7 +100,7 @@ export default class WordCountPlugin extends Plugin {
 		const documentText = editor.getValue();
 		const selectedText = editor.getSelection();
 
-		new WordCountModal(this.app, documentText, selectedText).open();
+		new WordCountModal(this.app, documentText, selectedText, this.settings).open();
 	}
 
 	private async toggleSidebar() {
@@ -85,15 +110,28 @@ export default class WordCountPlugin extends Plugin {
 			// Close existing view
 			existing.forEach((leaf) => leaf.detach());
 		} else {
-			// Open new view in right sidebar
-			const leaf = this.app.workspace.getRightLeaf(false);
-			if (leaf) {
-				await leaf.setViewState({
-					type: VIEW_TYPE_WORD_COUNT,
-					active: true,
-				});
-				this.app.workspace.revealLeaf(leaf);
-			}
+			await this.openSidebar();
+		}
+	}
+
+	private async openSidebar() {
+		const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_WORD_COUNT);
+		if (existing.length > 0) {
+			return; // Already open
+		}
+
+		// Open new view in configured sidebar position
+		const leaf =
+			this.settings.sidebarPosition === "left"
+				? this.app.workspace.getLeftLeaf(false)
+				: this.app.workspace.getRightLeaf(false);
+
+		if (leaf) {
+			await leaf.setViewState({
+				type: VIEW_TYPE_WORD_COUNT,
+				active: true,
+			});
+			this.app.workspace.revealLeaf(leaf);
 		}
 	}
 
