@@ -7,6 +7,7 @@ export const VIEW_TYPE_WORD_COUNT = "word-count-view";
 export class WordCountView extends ItemView {
 	private contentContainer: HTMLElement | null = null;
 	private plugin: WordCountPlugin;
+	private updateDebounceTimer: number | null = null;
 
 	constructor(leaf: WorkspaceLeaf, plugin: WordCountPlugin) {
 		super(leaf);
@@ -38,10 +39,23 @@ export class WordCountView extends ItemView {
 	}
 
 	async onClose() {
-		// Cleanup
+		if (this.updateDebounceTimer !== null) {
+			window.clearTimeout(this.updateDebounceTimer);
+		}
 	}
 
 	public updateStats() {
+		if (this.updateDebounceTimer !== null) {
+			window.clearTimeout(this.updateDebounceTimer);
+		}
+
+		this.updateDebounceTimer = window.setTimeout(() => {
+			this.updateDebounceTimer = null;
+			this.performUpdate();
+		}, 150);
+	}
+
+	private performUpdate() {
 		if (!this.contentContainer) return;
 
 		this.contentContainer.empty();

@@ -1,15 +1,6 @@
-# dependencies
 node_modules/
-
-# build output
-/dist/
-
-# Obsidian plugin build artifacts
-/main.js
-
-# misc
 .DS_Store
 *.log
-
-# bv (beads viewer) local config and caches
-.bv/
+data.json
+*.js.map
+main.js
