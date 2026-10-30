@@ -55,11 +55,8 @@ export class WordCountSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		// Main title
-		containerEl.createEl("h1", { text: "Wordcount+ settings" });
-
 		// Metrics Section
-		containerEl.createEl("h3", { text: "Metrics" });
+		new Setting(containerEl).setName("Metrics").setHeading();
 
 		new Setting(containerEl)
 			.setName("Show word count")
@@ -110,7 +107,7 @@ export class WordCountSettingTab extends PluginSettingTab {
 			);
 
 		// Display Section
-		containerEl.createEl("h3", { text: "Display" });
+		new Setting(containerEl).setName("Display").setHeading();
 
 		new Setting(containerEl)
 			.setName("Show sidebar on startup")
@@ -151,7 +148,7 @@ export class WordCountSettingTab extends PluginSettingTab {
 			);
 
 		// Counting Behavior Section
-		containerEl.createEl("h3", { text: "Counting Behavior" });
+		new Setting(containerEl).setName("Counting behavior").setHeading();
 
 		new Setting(containerEl)
 			.setName("Exclude markdown syntax")
@@ -178,7 +175,7 @@ export class WordCountSettingTab extends PluginSettingTab {
 			);
 
 		// Selection Section
-		containerEl.createEl("h3", { text: "Selection" });
+		new Setting(containerEl).setName("Selection").setHeading();
 
 		new Setting(containerEl)
 			.setName("Show selection stats")

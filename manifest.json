@@ -1,5 +1,5 @@
 {
-	"id": "obsidian-word-count",
+  "id": "word-count-panel",
 	"name": "Word Count",
 	"version": "1.0.0",
 	"minAppVersion": "1.0.0",
