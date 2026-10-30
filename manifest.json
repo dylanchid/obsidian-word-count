@@ -1,9 +1,9 @@
 {
   "id": "word-count-panel",
-	"name": "Word Count",
-	"version": "1.0.0",
-	"minAppVersion": "1.0.0",
-	"description": "Display word and character counts via modal popup and sidebar panel",
-	"author": "Dylan Chidambaram",
-	"isDesktopOnly": false
+  "name": "Word Count",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Display word and character counts in a modal and sidebar panel.",
+  "author": "Dylan Chidambaram",
+  "isDesktopOnly": false
 }
