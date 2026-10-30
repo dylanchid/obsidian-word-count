@@ -1,6 +1,6 @@
-# Word Count
+# Word Count Panel
 
-Display word and character counts for the active note and selected text.
+Display word and character counts for the active note and selected text. The directory name is **Word Count Panel** so it is distinct from Obsidian's core Word count.
 
 ## Use
 
@@ -8,7 +8,7 @@ Run **Show word count modal** for a quick count or **Toggle word count sidebar**
 
 ## Install manually
 
-Run `npm ci && npm run build`, then copy `manifest.json`, `main.js`, and `styles.css` into `<vault>/.obsidian/plugins/word-count-panel/`. Enable Word Count under **Settings → Community plugins**.
+Run `npm ci && npm run build`, then copy `manifest.json`, `main.js`, and `styles.css` into `<vault>/.obsidian/plugins/word-count-panel/`. Enable Word Count Panel under **Settings → Community plugins**.
 
 ## Develop
 
